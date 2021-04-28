@@ -1,0 +1,77 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "a89dfa089ec88dacab2d660e8ee24393",
+    "packages": [
+        {
+            "name": "pcn/api-router",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/peacefulcraft-network/api-router.git",
+                "reference": "481becdc2843788d8e199a4a26df227822e6aced"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/peacefulcraft-network/api-router/zipball/481becdc2843788d8e199a4a26df227822e6aced",
+                "reference": "481becdc2843788d8e199a4a26df227822e6aced",
+                "shasum": ""
+            },
+            "archive": {
+                "exclude": [
+                    "/test",
+                    "/scripts",
+                    "/.vscode",
+                    "/okteto.yml",
+                    "/.stignore"
+                ]
+            },
+            "require": {
+                "php": ">=8.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "net\\peacefulcraft\\apirouter\\": "src/"
+                }
+            },
+            "scripts": {
+                "test:install-dependencies": [
+                    "Composer\\Config::disableProcessTimeout",
+                    "composer --working-dir=test/ install"
+                ],
+                "test:run": [
+                    "Composer\\Config::disableProcessTimeout",
+                    "php test/vendor/bin/phpunit test/tests/units --bootstrap test/tests/bootstrap.php"
+                ]
+            },
+            "authors": [
+                {
+                    "name": "PeacefulCraft Network",
+                    "email": "support@peacefulcraft.net"
+                }
+            ],
+            "description": "A PHP framework for building RESTful APIs",
+            "support": {
+                "source": "https://github.com/peacefulcraft-network/api-router/tree/main",
+                "issues": "https://github.com/peacefulcraft-network/api-router/issues"
+            },
+            "time": "2021-04-27T08:04:09+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "pcn/api-router": 20
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.0.0"
+}

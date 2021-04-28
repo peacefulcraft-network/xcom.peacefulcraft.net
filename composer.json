@@ -1,0 +1,22 @@
+{
+    "name": "pcn/xcom.peacefulcraft.net",
+    "description": "A RESTful JSON API for interacting with our statistics backends and cross-server-communications platform XCOM.",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Peacefulcraft Network",
+            "email": "support@peacefulcraft.net"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "pcn/api-router": "dev-main"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/peacefulcraft-network/api-router"
+        }
+    ]
+}
