@@ -9,6 +9,11 @@
             "email": "support@peacefulcraft.net"
         }
     ],
+    "autoload": {
+        "psr-4": {
+            "pcn\\xcom\\": "src/"
+        }
+    },
     "minimum-stability": "dev",
     "require": {
         "pcn/api-router": "dev-main"
