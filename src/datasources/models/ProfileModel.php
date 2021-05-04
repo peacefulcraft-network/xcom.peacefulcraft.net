@@ -21,6 +21,7 @@ class ProfileModel extends MySQLDatasource {
 			$query->store_result();
 			array_push($res, $query->get_result()->fetch_object('\pcn\xcom\datasources\models\ProfileMode.php'));
 		}
+		$query->close();
 
 		return $res;
 	}
