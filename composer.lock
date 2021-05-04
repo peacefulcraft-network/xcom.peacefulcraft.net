@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/peacefulcraft-network/api-router.git",
-                "reference": "481becdc2843788d8e199a4a26df227822e6aced"
+                "reference": "b5aa6ea65be96c6192259b9734f3d91bef9441c6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/peacefulcraft-network/api-router/zipball/481becdc2843788d8e199a4a26df227822e6aced",
-                "reference": "481becdc2843788d8e199a4a26df227822e6aced",
+                "url": "https://api.github.com/repos/peacefulcraft-network/api-router/zipball/b5aa6ea65be96c6192259b9734f3d91bef9441c6",
+                "reference": "b5aa6ea65be96c6192259b9734f3d91bef9441c6",
                 "shasum": ""
             },
             "archive": {
@@ -60,7 +60,7 @@
                 "source": "https://github.com/peacefulcraft-network/api-router/tree/main",
                 "issues": "https://github.com/peacefulcraft-network/api-router/issues"
             },
-            "time": "2021-04-27T08:04:09+00:00"
+            "time": "2021-05-03T18:33:37+00:00"
         }
     ],
     "packages-dev": [],

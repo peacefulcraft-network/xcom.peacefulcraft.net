@@ -1,0 +1,24 @@
+services:
+  php:
+    image: php:8.0-cli-alpine
+    working_dir: /usr/src/myapp
+    command: ["sh", "scripts/start-dev-server.sh"]
+    ports:
+      - "8081:8081"
+    volumes:
+      - .:/usr/src/myapp
+  mariadb:
+    image: mariadb:10.5
+    environment:
+      MYSQL_ROOT_PASSWORD: development
+      MYSQL_DATABASE: xcom
+      MYSQL_USER: xcom
+      MYSQL_PASSWORD: xcom
+    ports:
+      - "3306:3306"
+  pma:
+    image: phpmyadmin:5
+    environment:
+      PMA_HOST: mariadb
+    ports:
+      - "8082:80"
