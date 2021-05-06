@@ -1,5 +1,7 @@
 <?php namespace pcn\xcom\datasources\models;
 
+use net\peacefulcraft\apirouter\router\Response;
+use net\peacefulcraft\apirouter\util\Validator;
 use pcn\xcom\datasources\MySQLDatasource;
 use RuntimeException;
 
@@ -46,6 +48,34 @@ class PartyModel extends MySQLDatasource {
 		return $Party;
 	}
 
+	public static function fetchById(int $party_id, bool $fetch_membership = false): ?PartyModel {
+		$name = $leader_id = "";
+		$party_membership = [];
+		
+		$query = SELF::$_mysqli->prepare("SELECT `name`,`leader_id` FROM `party` WHERE `party_id`=?");
+		$query->bind_param("i", $party_id);
+		$query->bind_result($name, $leader_id);
+		$query->execute();
+		$query->store_result();
+		if ($query->num_rows() !== 1) {
+			$query->close();
+			return null;	
+		}
+		$query->fetch();
+		$query->close();
+
+		if ($fetch_membership) {
+			$query = SELF::$_mysqli->prepare("SELECT `profile_id` FROM `party_membership` WHERE `party_id`=?");
+			$query->bind_param("i", $party_id);
+			$query->execute();
+			$query->store_result();
+			$party_membership = $query->get_result()->fetch_array(MYSQLI_NUM);
+			$query->close();
+		}
+
+		return new PartyModel($party_id, $leader_id, $name, $party_membership);
+	}
+ 
 	public static function deleteParty(int $party_id): void {
 		$query = SELF::$_mysqli->prepare("DELETE FROM `party` WHERE `party_id`=?");
 		$query->bind_param("i", $party_id);
@@ -53,7 +83,7 @@ class PartyModel extends MySQLDatasource {
 		$query->store_result();
 		$query->close();
 		if ($query->affected_rows < 1) {
-			throw new RuntimeException("Database error. Unable to delete party.");
+			throw new RuntimeException("Database error. Unable to confirm party removal.");
 		}
 	}
 
@@ -73,6 +103,8 @@ class PartyModel extends MySQLDatasource {
 	}
 
 	public function addMember(int $profile_id): void {
+		if (in_array($profile_id, $this->party_membership, true)) { return; }
+
 		$query = SELF::$_mysqli->prepare("INSERT INTO `party_membership` VALUES(?,?)");
 		$query->bind_param("ii", $this->id, $profile_id);
 		$query->execute();
@@ -120,6 +152,17 @@ class PartyModel extends MySQLDatasource {
 		}
 
 		unset($this->party_membership[$pos]);
+	}
+
+	public static function validatePartyId(?int $party_id): bool {
+		if (
+			Validator::meaningfullyExists($party_id)
+			&& is_numeric($party_id)
+			&& $party_id > 0
+			&& !is_float($party_id)
+		) {
+			return true;
+		} else { return false; }
 	}
 
 	public function jsonSerialize(): mixed {
