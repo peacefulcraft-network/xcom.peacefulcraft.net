@@ -21,8 +21,16 @@ class PartyModel extends MySQLDatasource {
 
 	protected function deserialize(): void {}
 
-	public function __construct(?int $party_id, int $leader_id, ?string $name = null, array $party_membership) {
+	public function __construct(?int $party_id, int $leader_id = -1, ?string $name = null, array $party_membership = []) {
 		if ($party_id === null) { return; }
+
+		if ($leader_id === -1) {
+			throw new RuntimeException("Leader id must be set and greater than 0.");
+		}
+
+		if (count($party_membership)) {
+			throw new RuntimeException("Party must have at least one mmeber to be created.");
+		}
 
 		$this->id = $party_id;
 		$this->leader_id = $leader_id;
