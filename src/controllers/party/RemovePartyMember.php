@@ -1,12 +1,12 @@
 <?php namespace pcn\xcom\controllers\party;
 
 use net\peacefulcraft\apirouter\router\Request;
-use net\peacefulcraft\apirouter\router\RequestHandler;
+use net\peacefulcraft\apirouter\router\Controller;
 use net\peacefulcraft\apirouter\router\Response;
 use pcn\xcom\datasources\models\PartyModel;
 use RuntimeException;
 
-class RemovePartyMember implements RequestHandler {
+class RemovePartyMember implements Controller {
 	public function handle(array $config, Request $request, Response $response): void {
 		$party_id = $request->getUriParameters()['id'];
 		$member_id = $request->getUriParameters()['uid'];
