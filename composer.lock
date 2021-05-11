@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/peacefulcraft-network/api-router.git",
-                "reference": "b5aa6ea65be96c6192259b9734f3d91bef9441c6"
+                "reference": "07a7b23533a8885737a44623026ae096f2fd55f5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/peacefulcraft-network/api-router/zipball/b5aa6ea65be96c6192259b9734f3d91bef9441c6",
-                "reference": "b5aa6ea65be96c6192259b9734f3d91bef9441c6",
+                "url": "https://api.github.com/repos/peacefulcraft-network/api-router/zipball/07a7b23533a8885737a44623026ae096f2fd55f5",
+                "reference": "07a7b23533a8885737a44623026ae096f2fd55f5",
                 "shasum": ""
             },
             "archive": {
@@ -57,10 +57,10 @@
             ],
             "description": "A PHP framework for building RESTful APIs",
             "support": {
-                "source": "https://github.com/peacefulcraft-network/api-router/tree/main",
+                "source": "https://github.com/peacefulcraft-network/api-router/tree/1.0.0-rc1",
                 "issues": "https://github.com/peacefulcraft-network/api-router/issues"
             },
-            "time": "2021-05-03T18:33:37+00:00"
+            "time": "2021-05-11T17:11:57+00:00"
         }
     ],
     "packages-dev": [],

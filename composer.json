@@ -16,6 +16,7 @@
     },
     "minimum-stability": "dev",
     "require": {
+        "ext-mysqli": "*",
         "pcn/api-router": "dev-main"
     },
     "repositories": [

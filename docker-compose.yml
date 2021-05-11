@@ -1,5 +1,8 @@
 services:
   php:
+    depends_on:
+      - mariadb
+      - migrations
     image: php:8.0-cli-alpine
     working_dir: /usr/src/myapp
     command: ["sh", "scripts/start-dev-server.sh"]
@@ -7,6 +10,8 @@ services:
       - "8081:8081"
     volumes:
       - .:/usr/src/myapp
+    networks:
+      - pcn-xcom-development
   mariadb:
     image: mariadb:10.5
     environment:
@@ -16,9 +21,18 @@ services:
       MYSQL_PASSWORD: xcom
     ports:
       - "3306:3306"
+    networks:
+      - pcn-xcom-development
   pma:
+    depends_on: [ mariadb ]
     image: phpmyadmin:5
     environment:
       PMA_HOST: mariadb
     ports:
       - "8082:80"
+    networks:
+      - pcn-xcom-development
+
+networks:
+  pcn-xcom-development:
+    name: pcn-xcom-development
