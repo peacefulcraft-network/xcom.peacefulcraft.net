@@ -28,7 +28,7 @@ class AddPartyMember implements Controller {
 			return;
 		}
 
-		$response->setHttpResponseCode(Response::HTTP_EMPTY_RESPONSE);
+		$response->setHttpResponseCode(Response::HTTP_CREATED);
 		$response->setResponseTypeRaw(true);
 	}
 }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a89dfa089ec88dacab2d660e8ee24393",
+    "content-hash": "776690c170f2dfd104df89e50510ff3b",
     "packages": [
         {
             "name": "pcn/api-router",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/peacefulcraft-network/api-router.git",
-                "reference": "07a7b23533a8885737a44623026ae096f2fd55f5"
+                "reference": "6f9857412cf9b06f54a3aeea45504672cfe2091e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/peacefulcraft-network/api-router/zipball/07a7b23533a8885737a44623026ae096f2fd55f5",
-                "reference": "07a7b23533a8885737a44623026ae096f2fd55f5",
+                "url": "https://api.github.com/repos/peacefulcraft-network/api-router/zipball/6f9857412cf9b06f54a3aeea45504672cfe2091e",
+                "reference": "6f9857412cf9b06f54a3aeea45504672cfe2091e",
                 "shasum": ""
             },
             "archive": {
@@ -57,10 +57,10 @@
             ],
             "description": "A PHP framework for building RESTful APIs",
             "support": {
-                "source": "https://github.com/peacefulcraft-network/api-router/tree/1.0.0-rc1",
+                "source": "https://github.com/peacefulcraft-network/api-router/tree/main",
                 "issues": "https://github.com/peacefulcraft-network/api-router/issues"
             },
-            "time": "2021-05-11T17:11:57+00:00"
+            "time": "2021-05-11T21:17:57+00:00"
         }
     ],
     "packages-dev": [],
@@ -71,7 +71,9 @@
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "ext-mysqli": "*"
+    },
     "platform-dev": [],
     "plugin-api-version": "2.0.0"
 }

@@ -21,6 +21,8 @@ class UpateParty implements Controller {
 			$Party = PartyModel::fetchById($party_id);
 			$Party->setName($body['name']);
 		}
+
+		$response->setHttpResponseCode(Response::HTTP_EMPTY_RESPONSE);
 	}
 }
 ?>

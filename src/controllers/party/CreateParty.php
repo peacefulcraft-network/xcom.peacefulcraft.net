@@ -37,7 +37,7 @@ class PartyCreate implements Controller {
 		}
 
 		// Return generated id
-		$response->setHttpResponseCode(Response::HTTP_OK);
+		$response->setHttpResponseCode(Response::HTTP_CREATED);
 		$response->setData([
 			"id" => $Party->getId(),
 		]);
