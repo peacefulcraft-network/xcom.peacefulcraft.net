@@ -8,7 +8,7 @@ abstract class RequestFieldsExist {
 		foreach ($fields as $field) {
 			if (
 				!array_key_exists($field, $body) ||
-				!Validator::meaningfullyExists($field[$body])
+				!Validator::meaningfullyExists($body[$field])
 			) {
 				$response->setHttpResponseCode(Response::HTTP_BAD_REQUEST);
 				$response->setErrorCode(Response::HTTP_BAD_REQUEST);

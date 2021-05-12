@@ -39,11 +39,12 @@ class PartyModel extends MySQLDatasource {
 	}
 
 	public static function createParty(int $leader_id, string $name = null): PartyModel {
-		$query = SELF::$_mysqli->prepare("INSERT INTO `party` VALUES(,?,?)");
+		$query = SELF::$_mysqli->prepare("INSERT INTO `party` (`name`, `leader_id`) VALUES(?,?)");
 		$query->bind_param("si", $name, $leader_id);
 		$query->execute();
 		$query->store_result();
 		if ($query->affected_rows !== 1) {
+			error_log(SELF::$_mysqli->error, SELF::$_mysqli->errorno);
 			$query->close();
 			throw new RuntimeException("Database error. Unable to create party.");
 		}
@@ -89,10 +90,12 @@ class PartyModel extends MySQLDatasource {
 		$query->bind_param("i", $party_id);
 		$query->execute();
 		$query->store_result();
-		$query->close();
 		if ($query->affected_rows < 1) {
+			error_log(SELF::$_mysqli->error, SELF::$_mysqli->errorno);
+			$query->close();
 			throw new RuntimeException("Database error. Unable to confirm party removal.");
 		}
+		$query->close();
 	}
 
 	public function setName(?string $name = null): void {
@@ -104,8 +107,11 @@ class PartyModel extends MySQLDatasource {
 		$query->store_result();
 		$query->close();
 		if ($query->affected_rows !== 1) {
+			error_log(SELF::$_mysqli->error, SELF::$_mysqli->errorno);
+			$query->close();
 			throw new RuntimeException("Database error. Unable to change party name");
 		}
+		$query->close();
 
 		$this->name = $name;
 	}
@@ -117,10 +123,12 @@ class PartyModel extends MySQLDatasource {
 		$query->bind_param("ii", $this->id, $profile_id);
 		$query->execute();
 		$query->store_result();
-		$query->close();
 		if ($query->affected_rows !== 1) {
+			error_log(SELF::$_mysqli->error, SELF::$_mysqli->errorno);
+			$query->close();
 			throw new RuntimeException("Database error. Unable to add user to party.");
 		}
+		$query->close();
 
 		array_push($this->party_membership, $profile_id);
 	}
@@ -136,8 +144,11 @@ class PartyModel extends MySQLDatasource {
 		$query->store_result();
 		$query->close();
 		if ($query->affected_rows !== 1) {
+			error_log(SELF::$_mysqli->error, SELF::$_mysqli->errorno);
+			$query->close();
 			throw new RuntimeException("Database error. Failed to transfer party leadership.");
 		}
+		$query->close();
 		
 		$this->leader_id = $profile_id;
 	}
@@ -154,10 +165,12 @@ class PartyModel extends MySQLDatasource {
 		$query->bind_param("i", $profile_id);
 		$query->execute();
 		$query->store_result();
-		$query->close();
 		if ($query->affected_rows !== 1) {
+			error_log(SELF::$_mysqli->error, SELF::$_mysqli->errorno);
+			$query->close();
 			throw new RuntimeException("Database error. Failed to remove party member.");
 		}
+		$query->close();
 
 		unset($this->party_membership[$pos]);
 	}

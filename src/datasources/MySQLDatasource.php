@@ -10,7 +10,7 @@ abstract class MySQLDatasource implements \JsonSerializable {
 	}
 
 	public static function init(array $config) {
-		SELF::$_mysqli->connect(
+		SELF::$_mysqli = new mysqli(
 			$config['host'],
 			$config['user'],
 			$config['password'],

@@ -1,9 +1,6 @@
 services:
   php:
-    depends_on:
-      - mariadb
-      - migrations
-    image: php:8.0-cli-alpine
+    image: registry.peacefulcraft.net/xcom/development:latest
     working_dir: /usr/src/myapp
     command: ["sh", "scripts/start-dev-server.sh"]
     ports:
@@ -24,7 +21,6 @@ services:
     networks:
       - pcn-xcom-development
   pma:
-    depends_on: [ mariadb ]
     image: phpmyadmin:5
     environment:
       PMA_HOST: mariadb

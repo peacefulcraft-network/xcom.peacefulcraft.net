@@ -8,7 +8,7 @@ use pcn\xcom\datasources\models\PartyModel;
 use pcn\xcom\util\RequestFieldsExist;
 use RuntimeException;
 
-class PartyCreate implements Controller {
+class CreateParty implements Controller {
 
 	public function handle(array $config, Request $request, Response $response): void {
 		$body = $request->getBody();
