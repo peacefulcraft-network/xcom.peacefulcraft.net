@@ -16,6 +16,12 @@ $Router = $Application->getRouter();
 
 $Router->registerRoute(RequestMethod::GET, "/health", [], '\pcn\xcpm\controllers\Index.php');
 
+// Profile routes
+$Router->registerRoute(RequestMethod::POST, '/profile', [
+	'\pcn\xcom\middleware\HasAuthorizationToken',
+	'\pcn\xcom\middleware\EchobackEmptyRequestBody',
+], '\pcn\xcom\controllers\profile\CreateProfile');
+
 // Party routes
 $Router->registerRoute(RequestMethod::POST, '/party', [
 	'\pcn\xcom\middleware\HasAuthorizationToken',

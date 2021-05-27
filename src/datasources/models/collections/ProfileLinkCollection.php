@@ -1,20 +1,14 @@
 <?php namespace pcn\xcom\datasources\models\collections;
 
+use JsonSerializable;
 use pcn\xcom\datasources\models\ProfileLinkModel;
-use pcn\xcom\datasources\models\ProfileModel;
 use pcn\xcom\enum\ProfileLinkService;
 use RuntimeException;
 
 /**
  * A model collection for wrapper a profile's linked service entries
  */
-class ProfileLinkCollection {
-	/**
-	 * Parent profile which these links belong to
-	 */
-	private ProfileModel $profile;
-		public function getProfile(): ProfileModel { return $this->profile; }
-
+class ProfileLinkCollection implements JsonSerializable {
 	private array $links;
 		/**
 		 * @return ProfileLinkModel the ProfileLinkModel for that service on this account.
@@ -44,9 +38,7 @@ class ProfileLinkCollection {
 	 * @param profile The parent profile which these links belong to
 	 * @param links An array of ProfileLinkModel objects reprsenting this $profile's service links.
 	 */
-	public function __construct(ProfileModel $profile, array $links = []) {
-		$this->profile = $profile;
-
+	public function __construct(array $links = []) {
 		foreach($links as $link) {
 			if (!($link instanceof ProfileLinkModel)) {
 				throw new RuntimeException('Contents of $links must be instnaceof ProfileLinkModel.');
@@ -54,6 +46,10 @@ class ProfileLinkCollection {
 		}
 
 		$this->links = $links;
+	}
+
+	public function jsonSerialize(): mixed {
+		return $this->links;
 	}
 }
 

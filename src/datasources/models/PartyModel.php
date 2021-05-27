@@ -1,6 +1,5 @@
 <?php namespace pcn\xcom\datasources\models;
 
-use net\peacefulcraft\apirouter\router\Response;
 use net\peacefulcraft\apirouter\util\Validator;
 use pcn\xcom\datasources\MySQLDatasource;
 use RuntimeException;
@@ -8,35 +7,24 @@ use RuntimeException;
 class PartyModel extends MySQLDatasource {
 
 	private int $id;
-		public function getId(): int { return $this->id; }
-
 	private int $leader_id;
-		public function getLeaderId(): int { return $this->leader_id; }
-
 	private string $name;
-		public function getPartyName(): ?string { return $this->name; }
-
 	private array $party_membership;
-		public function getPartyMembership(): array { return $this->party_membership; }
+
+	// Disable constructor
+	private function __construct() {}
+
+	public static function wrap(int $id, int $leader_id, string $name, array $party_membership): PartyModel {
+		$Party = new PartyModel();
+		$Party->id = $id;
+		$Party->leader_id = $leader_id;
+		$Party->name = $name;
+		$Party->party_membership = $party_membership;
+
+		return $Party;
+	}
 
 	protected function deserialize(): void {}
-
-	public function __construct(?int $party_id, int $leader_id = -1, ?string $name = null, array $party_membership = []) {
-		if ($party_id === null) { return; }
-
-		if ($leader_id === -1) {
-			throw new RuntimeException("Leader id must be set and greater than 0.");
-		}
-
-		if (count($party_membership)) {
-			throw new RuntimeException("Party must have at least one mmeber to be created.");
-		}
-
-		$this->id = $party_id;
-		$this->leader_id = $leader_id;
-		$this->name = $name;
-		$this->party_membership = $party_membership;
-	}
 
 	public static function createParty(int $leader_id, string $name = null): PartyModel {
 		$query = SELF::$_mysqli->prepare("INSERT INTO `party` (`name`, `leader_id`) VALUES(?,?)");
@@ -44,14 +32,14 @@ class PartyModel extends MySQLDatasource {
 		$query->execute();
 		$query->store_result();
 		if ($query->affected_rows !== 1) {
-			error_log(SELF::$_mysqli->error, SELF::$_mysqli->errorno);
+			error_log(SELF::$_mysqli->error, SELF::$_mysqli->errno);
 			$query->close();
 			throw new RuntimeException("Database error. Unable to create party.");
 		}
 		$party_id = $query->insert_id;
 		$query->close();
 
-		$Party = new PartyModel($party_id, $leader_id, $name, []);
+		$Party = PartyModel::wrap($party_id, $leader_id, $name, []);
 		$Party->addMember($leader_id);
 
 		return $Party;
@@ -66,7 +54,7 @@ class PartyModel extends MySQLDatasource {
 		$query->bind_result($name, $leader_id);
 		$query->execute();
 		$query->store_result();
-		if ($query->num_rows() !== 1) {
+		if ($query->num_rows !== 1) {
 			$query->close();
 			return null;	
 		}
@@ -82,7 +70,7 @@ class PartyModel extends MySQLDatasource {
 			$query->close();
 		}
 
-		return new PartyModel($party_id, $leader_id, $name, $party_membership);
+		return PartyModel::wrap($party_id, $leader_id, $name, $party_membership);
 	}
  
 	public static function deleteParty(int $party_id): void {
@@ -91,7 +79,7 @@ class PartyModel extends MySQLDatasource {
 		$query->execute();
 		$query->store_result();
 		if ($query->affected_rows < 1) {
-			error_log(SELF::$_mysqli->error, SELF::$_mysqli->errorno);
+			error_log(SELF::$_mysqli->error, SELF::$_mysqli->errno);
 			$query->close();
 			throw new RuntimeException("Database error. Unable to confirm party removal.");
 		}
@@ -107,7 +95,7 @@ class PartyModel extends MySQLDatasource {
 		$query->store_result();
 		$query->close();
 		if ($query->affected_rows !== 1) {
-			error_log(SELF::$_mysqli->error, SELF::$_mysqli->errorno);
+			error_log(SELF::$_mysqli->error, SELF::$_mysqli->errno);
 			$query->close();
 			throw new RuntimeException("Database error. Unable to change party name");
 		}
@@ -124,7 +112,7 @@ class PartyModel extends MySQLDatasource {
 		$query->execute();
 		$query->store_result();
 		if ($query->affected_rows !== 1) {
-			error_log(SELF::$_mysqli->error, SELF::$_mysqli->errorno);
+			error_log(SELF::$_mysqli->error, SELF::$_mysqli->errno);
 			$query->close();
 			throw new RuntimeException("Database error. Unable to add user to party.");
 		}
@@ -144,7 +132,7 @@ class PartyModel extends MySQLDatasource {
 		$query->store_result();
 		$query->close();
 		if ($query->affected_rows !== 1) {
-			error_log(SELF::$_mysqli->error, SELF::$_mysqli->errorno);
+			error_log(SELF::$_mysqli->error, SELF::$_mysqli->errno);
 			$query->close();
 			throw new RuntimeException("Database error. Failed to transfer party leadership.");
 		}
@@ -166,7 +154,7 @@ class PartyModel extends MySQLDatasource {
 		$query->execute();
 		$query->store_result();
 		if ($query->affected_rows !== 1) {
-			error_log(SELF::$_mysqli->error, SELF::$_mysqli->errorno);
+			error_log(SELF::$_mysqli->error, SELF::$_mysqli->errno);
 			$query->close();
 			throw new RuntimeException("Database error. Failed to remove party member.");
 		}
@@ -184,15 +172,6 @@ class PartyModel extends MySQLDatasource {
 		) {
 			return true;
 		} else { return false; }
-	}
-
-	public function jsonSerialize(): mixed {
-		return [
-			'id' => $this->id,
-			'name' => $this->name,
-			'leader_id' => $this->leader_id,
-			'party_membership' => $this->party_membership
-		];
 	}
 }
 
