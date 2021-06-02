@@ -14,7 +14,7 @@ $Application = new Application($config);
 MySQLDatasource::init($config['mysql']);
 $Router = $Application->getRouter();
 
-$Router->registerRoute(RequestMethod::GET, "/health", [], '\pcn\xcpm\controllers\Index.php');
+$Router->registerRoute(RequestMethod::GET, "/health", [], '\pcn\xcom\controllers\Index');
 
 // Profile routes
 $Router->registerRoute(RequestMethod::POST, '/profile', [

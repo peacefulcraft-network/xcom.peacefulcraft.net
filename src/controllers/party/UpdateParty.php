@@ -20,6 +20,7 @@ class UpateParty implements Controller {
 		if (array_key_exists('name', $body)) {
 			$Party = PartyModel::fetchById($party_id);
 			$Party->setName($body['name']);
+			$Party->commit();
 		}
 
 		$response->setHttpResponseCode(Response::HTTP_EMPTY_RESPONSE);

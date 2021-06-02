@@ -24,5 +24,9 @@
             "type": "vcs",
             "url": "https://github.com/peacefulcraft-network/api-router"
         }
-    ]
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "10.0.x-dev",
+        "guzzlehttp/guzzle": "7.4.x-dev"
+    }
 }
