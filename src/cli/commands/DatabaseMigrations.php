@@ -69,6 +69,8 @@ class DatabaseMigrations implements Command {
 
 			break; case "populate":
 
+				require(__DIR__ . '/../../../test/db-populate.php');
+
 			break; default:
 				$this->printHelpMessage();
 				Console::printLine("[red]Unknown database action [yellow]{$args[0]}.");

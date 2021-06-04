@@ -21,6 +21,8 @@ $Router->registerRoute(RequestMethod::POST, '/profile', [
 	'\pcn\xcom\middleware\HasAuthorizationToken',
 	'\pcn\xcom\middleware\EchobackEmptyRequestBody',
 ], '\pcn\xcom\controllers\profile\CreateProfile');
+// Uses standard url encoded parameters
+$Router->registerRoute(RequestMethod::GET, '/profile', [], '\pcn\xcom\controllers\profile\GetProfile');
 
 // Party routes
 $Router->registerRoute(RequestMethod::POST, '/party', [

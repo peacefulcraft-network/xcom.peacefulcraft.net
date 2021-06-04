@@ -6,6 +6,7 @@ use pcn\xcom\datasources\MySQLDatasource;
 use pcn\xcom\enum\ProfileLinkService;
 use pcn\xcom\enum\ProfileLinkVisibility;
 use RuntimeException;
+use SplFixedArray;
 
 class ProfileModel extends MySQLDatasource {
 
@@ -54,10 +55,13 @@ class ProfileModel extends MySQLDatasource {
 		// Create account link
 		$query = SELF::$_mysqli->prepare('INSERT INTO `profile_link` VALUES(?,?,?,?,?)');
 		$zero = 0;
-		$query->bind_param('issis', $profile_id, ProfileLinkService::MOJANG, $uuid, $zero, ProfileLinkVisibility::PUBLIC_VISIBLE);
+		$mojang = ProfileLinkService::MOJANG;
+		$public = ProfileLinkVisibility::PUBLIC_VISIBLE;
+
+		$query->bind_param('issis', $profile_id, $mojang, $uuid, $zero, $public);
 		$query->execute();
 		$query->store_result();
-		if ($query->affected_rows == 1) {
+		if ($query->affected_rows !== 1) {
 			error_log(SELF::$_mysqli->error, SELF::$_mysqli->errno);
 			$query->close();
 
@@ -78,18 +82,57 @@ class ProfileModel extends MySQLDatasource {
 		return $Profile;
 	}
 
-	public static function fetchByIds(array $ids): array {
+	public static function fetchByIds(array $ids): ?SplFixedArray {
 		$query = SELF::$_mysqli->prepare("SELECT * FROM `profile` WHERE `id`=?");
-		$res = array();
-		foreach($ids as $id) {
-			$query->bind_param("i", $id);
+		$num_ids = count($ids);
+		$ret = new SplFixedArray(count($ids));
+		$meaingfulResult = false;
+
+		for ($i=0; $i < $num_ids; $i++) {
+			// Ignore invalid ids
+			if (!is_int($ids[$i])) {
+				continue;
+			}
+			$query->bind_param('i', $ids[$i]);
 			$query->execute();
-			$query->store_result();
-			array_push($res, $query->get_result()->fetch_object('\pcn\xcom\datasources\models\ProfileModel'));
+			$res = $query->get_result();
+			if ($res->num_rows === 0) {
+				$res->free();
+				continue;
+			}
+			$ret[$i] = $res->fetch_object('\pcn\xcom\datasources\models\ProfileModel');
+			$res->free();
+			$meaingfulResult = true;
 		}
 		$query->close();
 
-		return $res;
+		return ($meaingfulResult)? $ret : null;
+	}
+
+	public static function fetchByProfileLink(ProfileLinkService $service, string $link): ?ProfileModel {
+		$query = SELF::$_mysqli->prepare('
+			SELECT `id`, `created_at`
+			FROM `profile` LEFT JOIN `profile_link` ON `profile`.`id` = `profile_link`.`profile_id`
+			WHERE `link_service`=? AND `link_identifier`=?
+		');
+		$query->bind_param('ss', $service, $link);
+		$query->bind_result($id, $created_at);
+		$query->execute();
+		$query->store_result();
+		if ($query->num_rows == 0) {
+			$query->free_result();
+			$query->close();
+			return null;
+		}
+
+		$query->fetch();
+		$query->free_result();
+		$query->close();
+
+		$Profile = self::fetchByIds([$id]);
+		if ($Profile === null) { return null; }
+
+		return $Profile[0];
 	}
 }
 ?>
