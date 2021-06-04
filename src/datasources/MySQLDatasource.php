@@ -280,8 +280,10 @@ abstract class MySQLDatasource implements \JsonSerializable {
 	public function jsonSerialize() {
 		$arr = array();
 
-		foreach(static::READABLE_FIELDS as $key=>$value) {
-			$arr[$key] = $value;
+		foreach(static::READABLE_FIELDS as $prop) {
+			if (isset($this->$prop)) {
+				$arr[$prop] = $this->$prop;
+			}
 		}
 
 		return $arr;
