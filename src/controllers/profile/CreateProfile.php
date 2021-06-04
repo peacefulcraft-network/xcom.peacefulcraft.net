@@ -3,7 +3,9 @@
 use net\peacefulcraft\apirouter\router\Controller;
 use net\peacefulcraft\apirouter\router\Request;
 use net\peacefulcraft\apirouter\router\Response;
+use pcn\xcom\datasources\models\ProfileLinkModel;
 use pcn\xcom\datasources\models\ProfileModel;
+use pcn\xcom\enum\ProfileLinkService;
 use pcn\xcom\util\RequestFieldsExist;
 use RuntimeException;
 
@@ -23,6 +25,14 @@ class CreateProfile implements Controller {
 			$response->setHttpResponseCode(Response::HTTP_BAD_REQUEST);
 			$response->setErrorCode(Response::HTTP_BAD_REQUEST);
 			$response->setErrorMessage('Invalid value in field \'uuid\'.');
+			return;
+		}
+
+		$Link = ProfileLinkModel::fetchProfileLink(new ProfileLinkService(ProfileLinkService::MOJANG), $body['uuid']);
+		if ($Link !== null) {
+			$response->setHttpResponseCode(Response::HTTP_BAD_REQUEST);
+			$response->setErrorCode(Response::HTTP_BAD_REQUEST);
+			$response->setErrorMessage('This uuid is already linked to an account.');
 			return;
 		}
 

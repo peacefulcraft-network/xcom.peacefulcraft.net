@@ -41,6 +41,21 @@ class ProfileLinkModel extends MySQLDatasource {
 		$this->link_service = new ProfileLinkService($this->link_service);
 		$this->link_visibility = new ProfileLinkVisibility($this->link_visibility);
 	}
+
+	public static function fetchProfileLink(ProfileLinkService $service, string $link): ?ProfileLinkModel {
+		$query = SELF::$_mysqli->prepare('SELECT * FROM `profile_link` WHERE `link_service`=? AND `link_identifier`=?');
+		$query->bind_param('ss', $service, $link);
+		$query->execute();
+		$res = $query->get_result();
+		if ($res->num_rows === 0) {
+			$res->free();
+			$query->close();
+			return null;
+		}
+
+		$Link = $res->fetch_object(SELF::class);
+		return $Link;
+	}
 }
 
 ?>
