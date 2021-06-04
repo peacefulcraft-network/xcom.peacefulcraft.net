@@ -16,19 +16,19 @@ class CreateParty implements Controller {
 		// Check for required parameters
 		if (!RequestFieldsExist::RequestFieldsExist(
 			$body,
-			[ "leader_id" ],
+			[ 'leader_id' ],
 			$response
 		)) { return; }
 
 		// Check for optional parameters
 		$party_name = null;
-		if (array_key_exists("party_name", $body) && Validator::meaningfullyExists($body["party_name"])) {
-			$party_name = $body["party_name"];
+		if (array_key_exists('party_name', $body) && Validator::meaningfullyExists($body['party_name'])) {
+			$party_name = $body['party_name'];
 		}
 
 		// Try to create the party
 		try {
-			$Party = PartyModel::createParty($body["leader_id"], $party_name);
+			$Party = PartyModel::createParty($body['leader_id'], $party_name);
 		} catch (RuntimeException $ex) {
 			$response->setHttpResponseCode(Response::HTTP_INTERNAL_ERROR);
 			$response->setErrorCode($ex->getCode());
@@ -39,7 +39,7 @@ class CreateParty implements Controller {
 		// Return generated id
 		$response->setHttpResponseCode(Response::HTTP_CREATED);
 		$response->setData([
-			"id" => $Party->id,
+			'id' => $Party->id,
 		]);
 	}
 }

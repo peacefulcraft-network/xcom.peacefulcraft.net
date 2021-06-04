@@ -6,15 +6,18 @@ use RuntimeException;
 
 class PartyModel extends MySQLDatasource {
 
-	private int $id;
-	private int $leader_id;
-	private string $name;
-	private array $party_membership;
+	CONST TABLE_NAME = 'party';
+	CONST READABLE_FIELDS = ['id', 'name', 'leader_id'];
+	CONST WRITEABLE_FIELDS = ['name'];
+
+	protected int $leader_id;
+	protected ?string $name;
+	protected array $party_membership;
 
 	// Disable constructor
 	private function __construct() {}
 
-	public static function wrap(int $id, int $leader_id, string $name, array $party_membership): PartyModel {
+	public static function wrap(int $id, int $leader_id, ?string $name, array $party_membership): PartyModel {
 		$Party = new PartyModel();
 		$Party->id = $id;
 		$Party->leader_id = $leader_id;
@@ -84,24 +87,6 @@ class PartyModel extends MySQLDatasource {
 			throw new RuntimeException("Database error. Unable to confirm party removal.");
 		}
 		$query->close();
-	}
-
-	public function setName(?string $name = null): void {
-		if ($name === $this->name) { return; }
-
-		$query = SELF::$_mysqli->prepare("UPDATE `party` SET `name`=? WHERE `id`=?");
-		$query->bind_param("si", $name, $this->id);
-		$query->execute();
-		$query->store_result();
-		$query->close();
-		if ($query->affected_rows !== 1) {
-			error_log(SELF::$_mysqli->error, SELF::$_mysqli->errno);
-			$query->close();
-			throw new RuntimeException("Database error. Unable to change party name");
-		}
-		$query->close();
-
-		$this->name = $name;
 	}
 
 	public function addMember(int $profile_id): void {
