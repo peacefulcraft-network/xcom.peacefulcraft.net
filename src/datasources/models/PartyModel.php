@@ -29,9 +29,9 @@ class PartyModel extends MySQLDatasource {
 
 	protected function deserialize(): void {}
 
-	public static function createParty(int $leader_id, string $name = null): PartyModel {
+	public static function createParty(ProfileModel $leader, string $name = null): PartyModel {
 		$query = SELF::$_mysqli->prepare("INSERT INTO `party` (`name`, `leader_id`) VALUES(?,?)");
-		$query->bind_param("si", $name, $leader_id);
+		$query->bind_param("si", $name, $leader->id);
 		$query->execute();
 		$query->store_result();
 		if ($query->affected_rows !== 1) {
@@ -42,8 +42,8 @@ class PartyModel extends MySQLDatasource {
 		$party_id = $query->insert_id;
 		$query->close();
 
-		$Party = PartyModel::wrap($party_id, $leader_id, $name, []);
-		$Party->addMember($leader_id);
+		$Party = PartyModel::wrap($party_id, $leader->id, $name, []);
+		$Party->addMember($leader);
 
 		return $Party;
 	}
@@ -52,7 +52,7 @@ class PartyModel extends MySQLDatasource {
 		$name = $leader_id = "";
 		$party_membership = [];
 		
-		$query = SELF::$_mysqli->prepare("SELECT `name`,`leader_id` FROM `party` WHERE `party_id`=?");
+		$query = SELF::$_mysqli->prepare("SELECT `name`,`leader_id` FROM `party` WHERE `id`=?");
 		$query->bind_param("i", $party_id);
 		$query->bind_result($name, $leader_id);
 		$query->execute();
@@ -65,7 +65,7 @@ class PartyModel extends MySQLDatasource {
 		$query->close();
 
 		if ($fetch_membership) {
-			$query = SELF::$_mysqli->prepare("SELECT `profile_id` FROM `party_membership` WHERE `party_id`=?");
+			$query = SELF::$_mysqli->prepare("SELECT `profile_id` FROM `party_membership` WHERE `id`=?");
 			$query->bind_param("i", $party_id);
 			$query->execute();
 			$query->store_result();
@@ -77,7 +77,7 @@ class PartyModel extends MySQLDatasource {
 	}
  
 	public static function deleteParty(int $party_id): void {
-		$query = SELF::$_mysqli->prepare("DELETE FROM `party` WHERE `party_id`=?");
+		$query = SELF::$_mysqli->prepare("DELETE FROM `party` WHERE `id`=?");
 		$query->bind_param("i", $party_id);
 		$query->execute();
 		$query->store_result();
@@ -89,11 +89,11 @@ class PartyModel extends MySQLDatasource {
 		$query->close();
 	}
 
-	public function addMember(int $profile_id): void {
-		if (in_array($profile_id, $this->party_membership, true)) { return; }
+	public function addMember(ProfileModel $profile): void {
+		if (in_array($profile->id, $this->party_membership, true)) { return; }
 
 		$query = SELF::$_mysqli->prepare("INSERT INTO `party_membership` VALUES(?,?)");
-		$query->bind_param("ii", $this->id, $profile_id);
+		$query->bind_param("ii", $this->id, $profile->id);
 		$query->execute();
 		$query->store_result();
 		if ($query->affected_rows !== 1) {
@@ -103,16 +103,16 @@ class PartyModel extends MySQLDatasource {
 		}
 		$query->close();
 
-		array_push($this->party_membership, $profile_id);
+		array_push($this->party_membership, $profile->id);
 	}
 
-	public function setLeader(int $profile_id): void {
-		if (!in_array($profile_id, $this->party_membership, true)) {
+	public function setLeader(ProfileModel $profile): void {
+		if (!in_array($profile->id, $this->party_membership, true)) {
 			throw new RuntimeException("User must be member of party to transfer leadership.");
 		}
 
 		$query = SELF::$_mysqli->prepare("UPDATE `party` SET `leader_id`=? WHERE `id`=?");
-		$query->bind_param("ii", $profile_id, $this->id);
+		$query->bind_param("ii", $profile->id, $this->id);
 		$query->execute();
 		$query->store_result();
 		$query->close();
@@ -123,19 +123,19 @@ class PartyModel extends MySQLDatasource {
 		}
 		$query->close();
 		
-		$this->leader_id = $profile_id;
+		$this->leader_id = $profile->id;
 	}
 
-	public function removeMember(int $profile_id): void {
-		if ($this->leader_id === $profile_id) {
+	public function removeMember(ProfileModel $profile): void {
+		if ($this->leader_id === $profile->id) {
 			throw new RuntimeException("Unable to remove leader from party. Transfer leadership, then try again.");
 		}
 
-		$pos = array_search($profile_id, $this->party_membership, true);
+		$pos = array_search($profile->id, $this->party_membership, true);
 		if (!$pos) { return; }
 
 		$query = SELF::$_mysqli->prepare("DELETE FROM `party_membership` WHERE `profile_id`=?");
-		$query->bind_param("i", $profile_id);
+		$query->bind_param("i", $profile->id);
 		$query->execute();
 		$query->store_result();
 		if ($query->affected_rows !== 1) {
