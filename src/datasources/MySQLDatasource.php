@@ -283,6 +283,8 @@ abstract class MySQLDatasource implements \JsonSerializable {
 		foreach(static::READABLE_FIELDS as $prop) {
 			if (isset($this->$prop)) {
 				$arr[$prop] = $this->$prop;
+			} else {
+				$arr[$prop] = null;
 			}
 		}
 

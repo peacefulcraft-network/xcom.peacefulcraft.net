@@ -3,6 +3,7 @@
 use pcn\xcom\datasources\MySQLDatasource;
 use pcn\xcom\enum\ProfileLinkService;
 use pcn\xcom\enum\ProfileLinkVisibility;
+use RuntimeException;
 
 class ProfileLinkModel extends MySQLDatasource {
 
@@ -40,6 +41,25 @@ class ProfileLinkModel extends MySQLDatasource {
 	protected function deserialize(): void {
 		$this->link_service = new ProfileLinkService($this->link_service);
 		$this->link_visibility = new ProfileLinkVisibility($this->link_visibility);
+	}
+
+	public static function createProfileLink(ProfileModel $Profile, ProfileLinkService $link_service, string $link, bool $is_speculative, ProfileLinkVisibility $visibility): ProfileLinkModel {
+		// Create account link
+		$query = SELF::$_mysqli->prepare('INSERT INTO `profile_link` VALUES(?,?,?,?,?)');
+
+		$query->bind_param('issis', $Profile->id, $link_service, $link, $is_speculative, $visibility);
+		$query->execute();
+		$query->store_result();
+		if ($query->affected_rows !== 1) {
+			error_log(SELF::$_mysqli->error, SELF::$_mysqli->errno);
+			$query->close();
+		
+			throw new RuntimeException('Error creating account link. Profile create failed.');
+		}
+		$query->close();
+
+		$ProfileLink = ProfileLinkModel::wrap($Profile->id, $link_service, $link, $is_speculative, $visibility);
+		return $ProfileLink;
 	}
 
 	public static function fetchProfileLink(ProfileLinkService $service, string $link): ?ProfileLinkModel {

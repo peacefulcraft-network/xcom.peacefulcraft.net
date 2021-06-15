@@ -1,8 +1,18 @@
 <?php
 
 use net\peacefulcraft\apirouter\router\Response;
+use pcn\xcom\datasources\models\ProfileModel;
 
 class CreatePartyTest extends ControllerTest {
+
+	private static ProfileModel $profile_with_no_party;
+
+	/**
+	 * @beforeClass
+	 */
+	public static function dbp() {
+		SELF::$profile_with_no_party = createProfile();
+	}
 
 	public function testCreatePartyRequiresAuthentication() {
 		$resp = SELF::$unAuthenticatedClient->post('/party', [
@@ -34,7 +44,7 @@ class CreatePartyTest extends ControllerTest {
 
 	public function testValidCreatePartyReturnsPartyDetails() {
 		$resp = SELF::$authenticatedClient->post('/party', [
-			'json' => ['leader_id' => 3]
+			'json' => ['leader_id' => SELF::$profile_with_no_party->id]
 		]);
 		$this->assertEquals(Response::HTTP_CREATED, $resp->getStatusCode());
 

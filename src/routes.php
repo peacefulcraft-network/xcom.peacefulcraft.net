@@ -19,19 +19,19 @@ $Router->registerRoute(RequestMethod::GET, "/health", [], '\pcn\xcom\controllers
 // Profile routes
 $Router->registerRoute(RequestMethod::POST, '/profile', [
 	'\pcn\xcom\middleware\HasAuthorizationToken',
-	'\pcn\xcom\middleware\EchobackEmptyRequestBody',
 ], '\pcn\xcom\controllers\profile\CreateProfile');
+$Router->registerRoute(RequestMethod::POST, '/profile/:id/link', [
+	'\pcn\xcom\middleware\HasAuthorizationToken',
+], '\pcn\xcom\controllers\profile\CreateServiceLink');
 // Uses standard url encoded parameters
-$Router->registerRoute(RequestMethod::GET, '/profile', [], '\pcn\xcom\controllers\profile\GetProfile');
+$Router->registerRoute(RequestMethod::GET, '/profile/:id', [], '\pcn\xcom\controllers\profile\GetProfile');
 
 // Party routes
 $Router->registerRoute(RequestMethod::POST, '/party', [
 	'\pcn\xcom\middleware\HasAuthorizationToken',
-	'\pcn\xcom\middleware\EchobackEmptyRequestBody',
 ], '\pcn\xcom\controllers\party\CreateParty');
 $Router->registerRoute(RequestMethod::PUT, '/party/:id', [
 	'\pcn\xcom\middleware\HasAuthorizationToken',
-	'\pcn\xcom\middleware\EchobackEmptyRequestBody',
 ], '\pcn\xcom\controllers\party\UpdateParty');
 $Router->registerRoute(RequestMethod::DELETE, '/party/:id', [
 	'\pcn\xcom\middleware\HasAuthorizationToken',

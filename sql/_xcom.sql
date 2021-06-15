@@ -72,14 +72,6 @@ CREATE TABLE `profile_link` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `_migrations`
---
-
-CREATE TABLE `_migrations` (
-  `migration` varchar(256) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
 -- Indexes for dumped tables
 --
 
@@ -110,12 +102,6 @@ ALTER TABLE `profile_link`
   ADD UNIQUE KEY `profile_link` (`profile_id`,`link_service`),
   ADD UNIQUE KEY `remote_link` (`link_service`,`link_identifier`),
   ADD KEY `profile_id` (`profile_id`);
-
---
--- Indexes for table `_migrations`
---
-ALTER TABLE `_migrations`
-  ADD UNIQUE KEY `migration` (`migration`);
 
 --
 -- AUTO_INCREMENT for dumped tables

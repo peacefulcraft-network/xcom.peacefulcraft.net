@@ -39,7 +39,7 @@ class ProfileModel extends MySQLDatasource {
 		$this->created_at = new DateTime($this->created_at);
 	}
 
-	public static function createProfile(string $uuid): ProfileModel {
+	public static function createProfile(): ProfileModel {
 		// Create profile
 		$query = SELF::$_mysqli->prepare("INSERT INTO `profile` VALUES()");
 		$query->execute();
@@ -52,32 +52,9 @@ class ProfileModel extends MySQLDatasource {
 		$profile_id = $query->insert_id;
 		$query->close();
 
-		// Create account link
-		$query = SELF::$_mysqli->prepare('INSERT INTO `profile_link` VALUES(?,?,?,?,?)');
-		$zero = 0;
-		$mojang = ProfileLinkService::MOJANG;
-		$public = ProfileLinkVisibility::PUBLIC_VISIBLE;
-
-		$query->bind_param('issis', $profile_id, $mojang, $uuid, $zero, $public);
-		$query->execute();
-		$query->store_result();
-		if ($query->affected_rows !== 1) {
-			error_log(SELF::$_mysqli->error, SELF::$_mysqli->errno);
-			$query->close();
-
-			// On error, try to delete orphaned profile entry
-			SELF::$_mysqli->query('DELETE FROM `profile` WHERE `id`=' . $profile_id);
-		
-			throw new RuntimeException('Error creating account link. Profile create failed.');
-		}
-		$query->close();
-
-		$MojangAccountLink = ProfileLinkModel::wrap($profile_id, new ProfileLinkService(ProfileLinkService::MOJANG), $uuid, false, new ProfileLinkVisibility(ProfileLinkVisibility::PUBLIC_VISIBLE));
-		$ProfileLinks = new ProfileLinkCollection([ $MojangAccountLink ]);
-
 		// created_at may not be accurate here, but it is mostly used for accounting so this is ok.
 		// subsiquent fetches will use the database value which is accurate, this just avoids an extra query.
-		$Profile = ProfileModel::wrap($profile_id, new DateTime('now'), $ProfileLinks);
+		$Profile = ProfileModel::wrap($profile_id, new DateTime('now'), new ProfileLinkCollection());
 
 		return $Profile;
 	}
