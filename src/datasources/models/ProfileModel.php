@@ -66,10 +66,6 @@ class ProfileModel extends MySQLDatasource {
 		$meaingfulResult = false;
 
 		for ($i=0; $i < $num_ids; $i++) {
-			// Ignore invalid ids
-			if (!is_int($ids[$i])) {
-				continue;
-			}
 			$query->bind_param('i', $ids[$i]);
 			$query->execute();
 			$res = $query->get_result();

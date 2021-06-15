@@ -4,6 +4,7 @@ use net\peacefulcraft\apirouter\router\Request;
 use net\peacefulcraft\apirouter\router\Controller;
 use net\peacefulcraft\apirouter\router\Response;
 use pcn\xcom\datasources\models\PartyModel;
+use pcn\xcom\datasources\models\ProfileModel;
 use RuntimeException;
 
 class AddPartyMember implements Controller {
@@ -19,8 +20,16 @@ class AddPartyMember implements Controller {
 		}
 
 		try {
+			$Profile = ProfileModel::fetchByIds([$member_id]);
 			$Party = PartyModel::fetchById($party_id);
-			$Party->addMember($member_id);
+			if ($Profile === null || $Party === null) {
+				$response->setHttpResponseCode(Response::HTTP_BAD_REQUEST);
+				$response->setErrorCode(Response::HTTP_BAD_REQUEST);
+				$response->setErrorMessage('Entity not found.');
+				return;
+			}
+
+			$Party->addMember($Profile[0]);
 		} catch (RuntimeException $ex) {
 			$response->setHttpResponseCode(Response::HTTP_INTERNAL_ERROR);
 			$response->setErrorCode($ex->getCode());
