@@ -22,7 +22,7 @@ class DeleteParty implements Controller {
 		} catch (RuntimeException $ex) {
 			$response->setHttpResponseCode(Response::HTTP_INTERNAL_ERROR);
 			$response->setErrorCode(Response::HTTP_INTERNAL_ERROR);
-			$response->setErrorMessage('Could not confirm party deletion. Party may not have existed in the first place.');
+			$response->setErrorMessage('Error deleting party.');
 			return;
 		}
 

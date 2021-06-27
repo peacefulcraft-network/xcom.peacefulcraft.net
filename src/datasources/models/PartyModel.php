@@ -1,5 +1,6 @@
 <?php namespace pcn\xcom\datasources\models;
 
+use net\peacefulcraft\apirouter\router\Response;
 use net\peacefulcraft\apirouter\util\Validator;
 use pcn\xcom\datasources\MySQLDatasource;
 use RuntimeException;
@@ -79,12 +80,9 @@ class PartyModel extends MySQLDatasource {
 	public static function deleteParty(int $party_id): void {
 		$query = SELF::$_mysqli->prepare("DELETE FROM `party` WHERE `id`=?");
 		$query->bind_param("i", $party_id);
-		$query->execute();
-		$query->store_result();
-		if ($query->affected_rows < 1) {
-			error_log(SELF::$_mysqli->error, SELF::$_mysqli->errno);
-			$query->close();
-			throw new RuntimeException("Database error. Unable to confirm party removal.");
+		if (!$query->execute()) {
+			error_log(SELF::$_mysqli->error);
+			throw new RuntimeException('Intenral database error');
 		}
 		$query->close();
 	}
@@ -128,7 +126,7 @@ class PartyModel extends MySQLDatasource {
 
 	public function removeMember(ProfileModel $profile): void {
 		if ($this->leader_id === $profile->id) {
-			throw new RuntimeException("Unable to remove leader from party. Transfer leadership, then try again.");
+			throw new RuntimeException("Unable to remove leader from party. Transfer leadership, then try again.", Response::HTTP_BAD_REQUEST);
 		}
 
 		$pos = array_search($profile->id, $this->party_membership, true);
@@ -141,14 +139,18 @@ class PartyModel extends MySQLDatasource {
 		if ($query->affected_rows !== 1) {
 			error_log(SELF::$_mysqli->error, SELF::$_mysqli->errno);
 			$query->close();
-			throw new RuntimeException("Database error. Failed to remove party member.");
+			throw new RuntimeException("Database error. Failed to remove party member.", Response::HTTP_INTERNAL_ERROR);
 		}
 		$query->close();
 
 		unset($this->party_membership[$pos]);
 	}
 
-	public static function validatePartyId(?int $party_id): bool {
+	/**
+	 * @param mixed $party_id Expects int. Accepts mixed since we're validating and don't want to generate
+	 * 												an exception when we can just use a boolean.
+	 */
+	public static function validatePartyId(mixed $party_id): bool {
 		if (
 			Validator::meaningfullyExists($party_id)
 			&& is_numeric($party_id)
