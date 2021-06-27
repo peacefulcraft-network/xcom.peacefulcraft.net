@@ -1,8 +1,21 @@
 <?php
 
 use net\peacefulcraft\apirouter\router\Response;
+use pcn\xcom\datasources\models\ProfileLinkModel;
+use pcn\xcom\datasources\models\ProfileModel;
 
 class GetProfileTest extends ControllerTest {
+
+	private static ProfileModel $user;
+	private static ProfileLinkModel $mojang_link;
+
+	/**
+	 * @beforeClass
+	 */
+	public static function dbp() {
+		SELF::$user = createProfile();
+		SELF::$mojang_link = linkProfileToMojangId(SELF::$user);
+	}
 
 	public function testGetProfileEnforcesParameterRequirements() {
 		$resp = SELF::$unAuthenticatedClient->get('/profile');
@@ -30,7 +43,7 @@ class GetProfileTest extends ControllerTest {
 	}
 
 	public function testValidGetProfileById() {
-		$resp = SELF::$unAuthenticatedClient->get('/profile?id=1');
+		$resp = SELF::$unAuthenticatedClient->get('/profile?id=' . SELF::$user->id);
 		$this->assertEquals(Response::HTTP_OK, $resp->getStatusCode());
 		
 		$api_resp = json_decode($resp->getBody(), true);
@@ -40,7 +53,7 @@ class GetProfileTest extends ControllerTest {
 	}
 
 	public function testValidGetProfileByMojangLink() {
-		$resp = SELF::$unAuthenticatedClient->get('/profile?service_id=MOJANG&link_identifier=7464ffe3-fec1-4c1e-8cdc-7dcc688fb986');
+		$resp = SELF::$unAuthenticatedClient->get('/profile?service_id=MOJANG&link_identifier=' . SELF::$mojang_link->link_identifier);
 		$this->assertEquals(Response::HTTP_OK, $resp->getStatusCode());
 		
 		$api_resp = json_decode($resp->getBody(), true);

@@ -18,7 +18,7 @@ class CreateProfileTest extends ControllerTest {
 		$data = $api_resp['data'];
 		$this->assertArrayHasKey('id', $data);
 		$this->assertIsInt($data['id']);
-		$this->assertGreaterThan(1, $data['id']);	// populated database should take at least id 1
+		$this->assertGreaterThan(0, $data['id']);
 	}
 }
 ?>

@@ -8,14 +8,12 @@ use RuntimeException;
 class ProfileLinkModel extends MySQLDatasource {
 
 	CONST TABLE_NAME = 'profile_link';
-	CONST READABLE_FIELDS = ['profile_id', 'link_service', 'is_speculative', 'link_visibility'];
+	CONST READABLE_FIELDS = ['profile_id', 'link_service', 'link_identifier', 'is_speculative', 'link_visibility'];
 	CONST WRITEABLE_FIELDS = ['is_speculative', 'link_visibility'];
 
 	protected int $profile_id;
 	protected string|ProfileLinkService $link_service;
 	protected string $link_identifier;
-		public function remoteIdentifieryVerify(string $identifier): bool
-			{ return $this->link_identifier === $identifier; }
 	protected bool $is_speculative;
 
 	/**

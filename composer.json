@@ -28,5 +28,11 @@
     "require-dev": {
         "phpunit/phpunit": "10.0.x-dev",
         "guzzlehttp/guzzle": "7.4.x-dev"
+    },
+    "scripts": {
+        "test:run:features" : [
+            "Composer\\Config::disableProcessTimeout",
+            "php vendor/bin/phpunit test/features --bootstrap test/bootstrap.php"
+        ]
     }
 }

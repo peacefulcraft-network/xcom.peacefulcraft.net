@@ -21,7 +21,7 @@ class CreatePartyTest extends ControllerTest {
 			]
 		]);
 
-		$this->assertEquals(Response::HTTP_UNAUTHORIZED, $resp->getStatusCode());
+		$this->assertEquals(Response::HTTP_UNAUTHORIZED, $resp->getStatusCode(), strval($resp->getBody()));
 	}
 
 	public function testCreatePartyEnforcesParameterContraints() {
@@ -46,12 +46,12 @@ class CreatePartyTest extends ControllerTest {
 		$resp = SELF::$authenticatedClient->post('/party', [
 			'json' => ['leader_id' => SELF::$profile_with_no_party->id]
 		]);
-		$this->assertEquals(Response::HTTP_CREATED, $resp->getStatusCode());
+		$this->assertEquals(Response::HTTP_CREATED, $resp->getStatusCode(), strval($resp->getBody()));
 
 		$api_resp = json_decode($resp->getBody(), true);
 		$data = $api_resp['data'];
-		$this->assertArrayHasKey('id', $data);
-		$this->assertIsInt($data['id']);
+		$this->assertArrayHasKey('id', $data, strval($resp->getBody()));
+		$this->assertIsInt($data['id'], strval($resp->getBody()));
 	}
 }
 ?>

@@ -5,6 +5,7 @@ use net\peacefulcraft\apirouter\router\Controller;
 use net\peacefulcraft\apirouter\router\Response;
 use net\peacefulcraft\apirouter\util\Validator;
 use pcn\xcom\datasources\models\PartyModel;
+use pcn\xcom\datasources\models\ProfileModel;
 use pcn\xcom\util\RequestFieldsExist;
 use RuntimeException;
 
@@ -28,7 +29,16 @@ class CreateParty implements Controller {
 
 		// Try to create the party
 		try {
-			$Party = PartyModel::createParty($body['leader_id'], $party_name);
+			$Leader = ProfileModel::fetchByIds([$body['leader_id']]);
+			if ($Leader === null) {
+				$response->setHttpResponseCode(Response::HTTP_BAD_REQUEST);
+				$response->setErrorCode(-1);
+				$response->setErrorMessage('No profile matches provided \'leader_id\'');
+				return;
+			}
+			$Leader = $Leader[0];
+
+			$Party = PartyModel::createParty($Leader, $party_name);
 		} catch (RuntimeException $ex) {
 			$response->setHttpResponseCode(Response::HTTP_INTERNAL_ERROR);
 			$response->setErrorCode($ex->getCode());

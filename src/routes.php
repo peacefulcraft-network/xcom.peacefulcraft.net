@@ -24,7 +24,7 @@ $Router->registerRoute(RequestMethod::POST, '/profile/:id/link', [
 	'\pcn\xcom\middleware\HasAuthorizationToken',
 ], '\pcn\xcom\controllers\profile\CreateServiceLink');
 // Uses standard url encoded parameters
-$Router->registerRoute(RequestMethod::GET, '/profile/:id', [], '\pcn\xcom\controllers\profile\GetProfile');
+$Router->registerRoute(RequestMethod::GET, '/profile', [], '\pcn\xcom\controllers\profile\GetProfile');
 
 // Party routes
 $Router->registerRoute(RequestMethod::POST, '/party', [

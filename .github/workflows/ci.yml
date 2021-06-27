@@ -1,0 +1,27 @@
+name: "CI"
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v2
+        with:
+          path: test/vendor/
+          key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
+
+      - name: Setup test project
+        run: composer --working-dir=test/ require
+
+      - name: Run tests
+        run: cd test/scripts && /bin/sh run-tests.sh
+
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: phpunit-report.xml
