@@ -4,6 +4,7 @@ use pcn\xcom\datasources\MySQLDatasource;
 use pcn\xcom\enum\ProfileLinkService;
 use pcn\xcom\enum\ProfileLinkVisibility;
 use RuntimeException;
+use SplFixedArray;
 
 class ProfileLinkModel extends MySQLDatasource {
 
@@ -12,6 +13,10 @@ class ProfileLinkModel extends MySQLDatasource {
 	CONST WRITEABLE_FIELDS = ['is_speculative', 'link_visibility'];
 
 	protected int $profile_id;
+	/**
+	 * Type string|ProfileLinkService to remain compatible with MySQLIResult->fetchObject()
+	 * Once object is instantiated, deserialize() is called which wraps the value in an Enum.
+	 */
 	protected string|ProfileLinkService $link_service;
 	protected string $link_identifier;
 	protected bool $is_speculative;
@@ -20,7 +25,7 @@ class ProfileLinkModel extends MySQLDatasource {
 	 * Type string|ProfileLinkVisibility to remain compatible with MySQLIResult->fetchObject()
 	 * Once object is instantiated, deserialize() is called which wraps the value in an Enum.
 	 */
-	private string|ProfileLinkVisibility $link_visibility;
+	protected string|ProfileLinkVisibility $link_visibility;
 
 	// Disable constructor
 	private function __construct() {}
@@ -73,6 +78,24 @@ class ProfileLinkModel extends MySQLDatasource {
 
 		$Link = $res->fetch_object(SELF::class);
 		return $Link;
+	}
+
+	public static function fetchProfileLinksByProfile(ProfileModel $Profile): SplFixedArray {
+		$query = SELF::$_mysqli->prepare('SELECT * FROM `profile_link` WHERE `profile_id`=?');
+		$query->bind_param('i', $Profile->id);
+		$query->execute();
+		$res = $query->get_result();
+
+		$linkObs = new SplFixedArray($res->num_rows);
+		$i = 0;
+		for ($i=0; $j = $res->fetch_object(SELF::class); $i++) {
+			$j->deserialize();
+			$linkObs[$i] = $j;
+		}
+
+		$res->free();
+		$query->close();
+		return $linkObs;
 	}
 }
 

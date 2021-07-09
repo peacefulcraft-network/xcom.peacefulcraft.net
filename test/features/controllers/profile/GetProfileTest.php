@@ -3,6 +3,7 @@
 use net\peacefulcraft\apirouter\router\Response;
 use pcn\xcom\datasources\models\ProfileLinkModel;
 use pcn\xcom\datasources\models\ProfileModel;
+use pcn\xcom\enum\ProfileLinkService;
 
 class GetProfileTest extends ControllerTest {
 
@@ -50,6 +51,9 @@ class GetProfileTest extends ControllerTest {
 		$data = $api_resp['data'];
 		$this->assertEquals("", $api_resp['error']);
 		$this->assertEquals(1, $data['id']);
+		$this->assertGreaterThan(0, count($data['links']));
+		$this->assertEquals(ProfileLinkService::MOJANG, $data['links'][0]['link_service']);
+		$this->assertEquals('7464ffe3-fec1-4c1e-8cdc-7dcc688fb986', $data['links'][0]['link_identifier']);
 	}
 
 	public function testValidGetProfileByMojangLink() {
@@ -60,6 +64,9 @@ class GetProfileTest extends ControllerTest {
 		$data = $api_resp['data'];
 		$this->assertEquals("", $api_resp['error']);
 		$this->assertEquals(1, $data['id']);
+		$this->assertGreaterThan(0, count($data['links']));
+		$this->assertEquals(ProfileLinkService::MOJANG, $data['links'][0]['link_service']);
+		$this->assertEquals('7464ffe3-fec1-4c1e-8cdc-7dcc688fb986', $data['links'][0]['link_identifier']);
 	}
 }
 

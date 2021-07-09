@@ -1,33 +1,27 @@
 <?php namespace pcn\xcom\datasources\models;
 
 use DateTime;
-use pcn\xcom\datasources\models\collections\ProfileLinkCollection;
 use pcn\xcom\datasources\MySQLDatasource;
 use pcn\xcom\enum\ProfileLinkService;
-use pcn\xcom\enum\ProfileLinkVisibility;
 use RuntimeException;
 use SplFixedArray;
 
 class ProfileModel extends MySQLDatasource {
 
 	CONST TABLE_NAME = 'profile';
-	CONST READABLE_FIELDS = ['id', 'created_at', 'links'];
+	CONST READABLE_FIELDS = ['id', 'created_at'];
 	CONST WRITEABLE_FIELDS = [];
 
 	protected int $id;
 	protected string|DateTime $created_at;
 
-	protected ?ProfileLinkCollection $links;
-
 	// Disable constructor
 	private function __construct() {}
 
-	public static function wrap(int $id, DateTime $created_at, ProfileLinkCollection $links): ProfileModel {
+	public static function wrap(int $id, DateTime $created_at): ProfileModel {
 		$Profile = new ProfileModel();
 		$Profile->id = $id;
 		$Profile->created_at = $created_at;
-		
-		$Profile->links = $links;
 
 		return $Profile;
 	}
@@ -54,7 +48,7 @@ class ProfileModel extends MySQLDatasource {
 
 		// created_at may not be accurate here, but it is mostly used for accounting so this is ok.
 		// subsiquent fetches will use the database value which is accurate, this just avoids an extra query.
-		$Profile = ProfileModel::wrap($profile_id, new DateTime('now'), new ProfileLinkCollection());
+		$Profile = ProfileModel::wrap($profile_id, new DateTime('now'));
 
 		return $Profile;
 	}
@@ -74,6 +68,7 @@ class ProfileModel extends MySQLDatasource {
 				continue;
 			}
 			$ret[$i] = $res->fetch_object('\pcn\xcom\datasources\models\ProfileModel');
+			$ret[$i]->deserialize();
 			$res->free();
 			$meaingfulResult = true;
 		}

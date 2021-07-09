@@ -4,6 +4,7 @@ use net\peacefulcraft\apirouter\router\Controller;
 use net\peacefulcraft\apirouter\router\Request;
 use net\peacefulcraft\apirouter\router\Response;
 use net\peacefulcraft\apirouter\util\Validator;
+use pcn\xcom\datasources\models\ProfileLinkModel;
 use pcn\xcom\datasources\models\ProfileModel;
 use pcn\xcom\enum\ProfileLinkService;
 use RuntimeException;
@@ -23,16 +24,28 @@ class GetProfile implements Controller {
 				return;
 			}
 			
-			$profile = ProfileModel::fetchByIds([ $id ]);
-			if ($profile === null) {
+			$Profile = ProfileModel::fetchByIds([ $id ]);
+			if ($Profile === null) {
 				$response->setHttpResponseCode(Response::HTTP_NOT_FOUND);
 				$response->setErrorCode(Response::HTTP_NOT_FOUND);
 				$response->setErrorMessage('Profile not found.');
 				return;
 			}
 			
+			$ProfileLinks = ProfileLinkModel::fetchProfileLinksByProfile($Profile[0]);
+
+			/**
+			 * jsonSerialize() is used to copy the Profile into the new array at the top level.
+			 * This will copy fields that are meant to be API-public and means adding or removing
+			 * properties from the model will not break this code.
+			 * - PHP spread does not work with an array that has string keys
+			 * - (array) cast doesn't work because internally PHP mangles private and protected properties with null characters
+			 */
+			$resp = $Profile[0]->jsonSerialize();
+			$resp['links'] = (array) $ProfileLinks;
+
 			$response->setHttpResponseCode(Response::HTTP_OK);
-			$response->setData($profile[0]);
+			$response->setData($resp);
 
 		/**
 		 * Fetch by service link (oAuth, etc)
@@ -60,8 +73,20 @@ class GetProfile implements Controller {
 				return;
 			}
 
-			$response->setData($Profile);
+			$ProfileLinks = ProfileLinkModel::fetchProfileLinksByProfile($Profile);
+
+			/**
+			 * jsonSerialize() is used to copy the Profile into the new array at the top level.
+			 * This will copy fields that are meant to be API-public and means adding or removing
+			 * properties from the model will not break this code.
+			 * - PHP spread does not work with an array that has string keys
+			 * - (array) cast doesn't work because internally PHP mangles private and protected properties with null characters
+			 */
+			$resp = $Profile->jsonSerialize();
+			$resp['links'] = (array) $ProfileLinks;
+
 			$response->setHttpResponseCode(Response::HTTP_OK);
+			$response->setData($resp);
 
 		/**
 		 * Bad request. Unresolvable set of profile parameters
