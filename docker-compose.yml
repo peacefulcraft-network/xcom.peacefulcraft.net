@@ -28,6 +28,13 @@ services:
       - "8082:80"
     networks:
       - pcn-xcom-development
+  rabbitmq:
+    image: rabbitmq:3.9.0-management
+    ports:
+      - "5672:5672"
+      - "8083:15672"
+    networks:
+      - pcn-xcom-development
 
 networks:
   pcn-xcom-development:
