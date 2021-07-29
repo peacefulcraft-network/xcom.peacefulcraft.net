@@ -43,6 +43,22 @@ $Router->registerRoute(RequestMethod::DELETE, '/party/:id/membership/:uid', [
 	'\pcn\xcom\middleware\HasAuthorizationToken',
 ], '\pcn\xcom\controllers\party\RemovePartyMember');
 
+// Session routes
+$Router->registerRoute(RequestMethod::POST, '/session', [
+	'\pcn\xcom\middleware\HasAuthorizationToken',
+], '\pcn\xcom\controllers\session\CreateSession');
+$Router->registerRoute(RequestMethod::DELETE, '/session/:sid', [
+	'\pcn\xcom\middleware\HasAuthorizationToken',
+], '\pcn\xcom\controllers\session\DeleteSession');
+// Special RPC-style route because it needs to accept a list and 
+// we adhere to the 'DELETEs don't have bodies' convention.
+$Router->registerRoute(RequestMethod::POST, '/rpc/session/delete/properties', [
+	'\pcn\xcom\middleware\HasAuthorizationToken',
+], '\pcn\xcom\controllers\session\DeleteSessionProperties');
+$Router->registerRoute(RequestMethod::POST, '/session/:sid/properties', [
+	'\pcn\xcom\middleware\HasAuthorizationToken',
+], '\pcn\xcom\controllers\session\UpdateSessionProperties');
+
 $Application->handle();
 ob_flush();
 ?>
