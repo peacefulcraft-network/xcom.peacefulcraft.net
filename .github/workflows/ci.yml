@@ -18,7 +18,7 @@ jobs:
         run: composer --working-dir=test/ require
 
       - name: Run tests
-        run: cd test/scripts && /bin/sh run-tests.sh
+        run: composer test:run:features
 
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
