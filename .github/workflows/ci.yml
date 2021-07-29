@@ -15,7 +15,7 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
 
       - name: Setup test project
-        run: composer --working-dir=test/ require
+        run: composer require
 
       - name: Run tests
         run: composer test:run:features
