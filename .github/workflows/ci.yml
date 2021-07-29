@@ -11,7 +11,7 @@ jobs:
       - name: Cache Composer dependencies
         uses: actions/cache@v2
         with:
-          path: test/vendor/
+          path: vendor
           key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
 
       - name: Setup test project
